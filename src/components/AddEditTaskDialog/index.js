@@ -14,7 +14,7 @@ import AddIcon from '@material-ui/icons/Add';
 import Tooltip from '@material-ui/core/Tooltip';
 import moment from 'moment';
 
-const DATE_FORMAT = 'DD-MM-YYYY';
+import { DAY_FORMAT } from '../../constants/dates';
 
 const Controls = styled.div`
   position: fixed;
@@ -68,12 +68,13 @@ const AddEditTaskDialog = (props) => {
     const notes = values.notes;
 
     setValues({ ...values, notes: splice(pos, 0, tag, notes) });
+    el.focus();
   };
 
   const createNewTask = async () => {
     const data = {
       ...values,
-      day: moment().format(DATE_FORMAT),
+      day: moment().format(DAY_FORMAT),
       userId,
       createdAt: firebase.serverValue.TIMESTAMP,
     };
@@ -99,9 +100,14 @@ const AddEditTaskDialog = (props) => {
       track: edit.track || [],
       userId: edit.userId,
       day: edit.day,
-      status: edit.status
+      status: edit.status || 'to_do'
     };
-    firebase.task(edit.uid).set(data);
+
+    try {
+      firebase.task(edit.uid).set(data);
+    } catch(err) {
+      console.log('EDIT TASK ERROR: ', err);
+    }
   };
 
   const saveForm = () => {
