@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
-import { AuthUserContext, withAuthorization } from '../Session';
 import styled from 'styled-components';
 import moment from 'moment';
-
-import AddEditTaskDialog from '../AddEditTaskDialog';
-
+import { AuthUserContext, withAuthorization } from '../Session';
 import { withFirebase } from '../Firebase';
-
+import TodayIcon from '@material-ui/icons/Today';
+import AddEditTaskDialog from '../AddEditTaskDialog';
 import TaskItem from '../TaskItem';
 import { DAY_FORMAT } from '../../constants/dates';
-
 import { blue } from '../../constants/colors';
 
 const Separator = styled.div`
@@ -22,6 +19,15 @@ const Separator = styled.div`
   margin: 0 10px;
 `;
 
+const StyledTodayIcon = styled(TodayIcon)`
+  vertical-align: middle;
+  &.MuiSvgIcon-root {
+    margin-right: 5px;
+    margin-top: -4px;
+    width: 24px;
+    height: 24px;
+  }
+`;
 
 const HomePage = () => (
   <div>
@@ -110,7 +116,7 @@ class TasksBase extends Component {
     });
   };
 
-  onCloneTask = (task) => {
+  onCloneTask = async (task) => {
     const data = {
       name: task.name,
       title: task.title,
@@ -121,14 +127,16 @@ class TasksBase extends Component {
       day: moment().format(DAY_FORMAT),
       userId: task.userId,
     };
-    this.props.firebase.tasks().push({
-      ...data,
-      createdAt: this.props.firebase.serverValue.TIMESTAMP,
-    }).then((res) => {
-      console.log('TASK CLONED!!! >>>>>>', res);
-    }).catch((err) => {
+
+    try {
+      await this.props.firebase.tasks().push({
+        ...data,
+        createdAt: this.props.firebase.serverValue.TIMESTAMP,
+      });
+      console.log('TASK CLONED!!! >>>>>>');
+    } catch(err) {
       console.log('ERROR: ', err);
-    });
+    }
   };
 
   render() {
@@ -162,7 +170,10 @@ class TasksBase extends Component {
                   Object.keys(groupedList).map((key) => (
                     <div key={key}>
 
-                      <Separator>{ moment(key, DAY_FORMAT).format('DD.MM.YYYY dddd') }</Separator>
+                      <Separator>
+                        <StyledTodayIcon />
+                        { moment(key, DAY_FORMAT).format('DD.MM.YYYY dddd') }
+                      </Separator>
 
 
                       {groupedList[key] ? (
