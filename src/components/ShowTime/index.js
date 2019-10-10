@@ -1,29 +1,41 @@
 import React from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
+import { slateblue } from '../../constants/colors';
 
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 const TrackWrap = styled.div`
-  margin: 10px 0;
-  border: 1px solid #3f51b5;
-  padding: 10px;
+  float: right;
+  display: inline-block;
+  padding: 4px 8px;
   border-radius: 4px;
+  background: ${slateblue};
+  color: #ffffff;
+  box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12);
 `;
 
 const StyledScheduleIcon = styled(ScheduleIcon)`
-  vertical-align: middle;
-  margin-right: 5px;
-  margin-top: -3px;
+  &.MuiSvgIcon-root {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 5px;
+    margin-top: -3px;
+  }
 `;
 
 const StyledCircularProgress = styled(CircularProgress)`
-  vertical-align: middle;
-  margin: -5px 10px 0 5px;
+    vertical-align: middle;
+    margin: -2px 8px 0 5px;
+    .MuiCircularProgress-svg {
+      color: #ffffff;
+    }
 `;
 
 const ShowTime = ({ track }) => {
+  if (!track || !track.length) return '';
   const milliseconds = track.reduce((res, item) => {
     if (item.start && item.stop) res = res + item.stop - item.start;
     return res;
@@ -42,14 +54,14 @@ const ShowTime = ({ track }) => {
 
   return (
     <TrackWrap>
-        <StyledScheduleIcon />
-        <b>{ sum } </b>
-        <b>{ lastStartTime && !lastStopTime ?  (
+      <StyledScheduleIcon />
+      <b>{ sum } </b>
+      <b>{ lastStartTime && !lastStopTime ?  (
           <span>
-            <StyledCircularProgress size={20}/>
-            { 'START:' + moment(lastStartTime).format('HH:mm') }
-          </span>
-        ) : '' }</b>
+      <StyledCircularProgress size={16} />
+            { moment(lastStartTime).format('HH:mm') }
+    </span>
+      ) : '' }</b>
     </TrackWrap>
   );
 };

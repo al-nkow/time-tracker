@@ -4,18 +4,19 @@ import styled from 'styled-components';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import SendIcon from '@material-ui/icons/Send';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 import AlarmOnIcon from '@material-ui/icons/AlarmOn';
 import RateReviewIcon from '@material-ui/icons/RateReview';
 import AdbIcon from '@material-ui/icons/Adb';
 import DoneIcon from '@material-ui/icons/Done';
 
+import { blue } from '../../constants/colors';
+
 const StyledMenuItem = styled(MenuItem)`
   &.MuiMenuItem-root {
     min-height: 34px;
     .MuiSvgIcon-root {
-      color: #606686;
+      color: ${blue};
       width: 18px;
       height: 18px;
       margin-right: 7px;
@@ -31,7 +32,7 @@ const StyledButton = styled(Button)`
       vertical-align: middle;
       width: 20px;
       height: 20px;
-      color: #606686;
+      color: ${blue};
     }
     .name {
       font-size: 12px;
@@ -57,10 +58,6 @@ const statusList = {
     name: 'In Testing',
     icon: (<AdbIcon />)
   },
-  // 'ready_for_prod': {
-  //   name: 'Ready for Production',
-  //   icon: (<SendIcon />)
-  // },
   'done': {
     name: 'Done',
     icon: (<DoneIcon />)
@@ -82,8 +79,12 @@ const StatusSelect = (props) => {
 
   return (
     <span>
-      <StyledButton size="small" aria-controls="status-menu" aria-haspopup="true"
-              onClick={handleClickStatus}>
+      <StyledButton
+        size="small"
+        aria-controls="status-menu"
+        aria-haspopup="true"
+        onClick={handleClickStatus}
+      >
         { statusList[status].icon }
         <span className="name">{ statusList[status].name }</span>
       </StyledButton>

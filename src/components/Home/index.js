@@ -10,12 +10,14 @@ import { withFirebase } from '../Firebase';
 import TaskItem from '../TaskItem';
 import { DAY_FORMAT } from '../../constants/dates';
 
+import { blue } from '../../constants/colors';
+
 const Separator = styled.div`
   padding: 5px 20px;
   font-size: 20px;
   font-weight: bold;
   color: #ffffff;
-  background: #606686;
+  background: ${blue};
   border-radius: 4px;
   margin: 0 10px;
 `;

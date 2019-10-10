@@ -1,0 +1,12 @@
+export const blue = '#4d83bf';
+export const mainBg = '#e6e1e2';
+export const text = '#635c63';
+export const textLight = '#b2adb0';
+export const dark = '#655f59';
+export const red = '#d46960';
+export const orange = '#e6bf73';
+export const green = '#68b5b0';
+export const slateblue = '#808ddd';
+export const violet = '#bd6f97';
+export const light = '#f1ebe9';
+export const beige = '#fcf7f1';

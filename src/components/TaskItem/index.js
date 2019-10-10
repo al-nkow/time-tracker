@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import styled from 'styled-components';
 import { compose } from 'recompose';
 import { withFirebase } from '../Firebase';
@@ -7,17 +7,35 @@ import WithConfirmAction from '../WithConfirmAction';
 import DOMPurify from 'dompurify';
 
 import TimelineIcon from '@material-ui/icons/Timeline';
+import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
+import PauseCircleFilledIcon from '@material-ui/icons/PauseCircleFilled';
 
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
+import ArchiveIcon from '@material-ui/icons/Archive';
+import UnarchiveIcon from '@material-ui/icons/Unarchive';
 
 import StatusSelect from '../StatusSelect';
 import ShowTime from '../ShowTime';
 
+import { beige, text, blue } from '../../constants/colors';
+
 const Wrap = styled(Paper)`
-  padding: 20px;
+  padding: 10px;
   max-width: 600px;
   margin: 20px auto;
+  &.stash {
+    opacity: 0.5;
+  }
+`;
+
+const Inner = styled.div`
+  padding: 10px;
+  border-radius: 4px;
+  background: ${beige};
 `;
 
 const Head = styled.div`
@@ -27,17 +45,44 @@ const Head = styled.div`
 const Title = styled.div`
   margin-bottom: 10px;
   font-weight: bold;
+  padding: 8px 12px 8px 12px;
+  border-radius: 4px;
+  box-shadow: 0 5px 10px -3px rgba(0,0,0,0.1);
 `;
 
 const Branch = styled.div`
   margin-bottom: 5px;
   cursor: pointer;
+  padding: 8px 12px 8px 12px;
+  border-radius: 4px;
+  box-shadow: 0 5px 10px -3px rgba(0,0,0,0.1);
 `;
 
 const StyledTimelineIcon = styled(TimelineIcon)`
   vertical-align: middle;
-  color: #333333;
-  margin-top: -5px;
+  margin-top: -4px;
+  margin-right: 3px;
+`;
+
+const Name = styled.a`
+  color: ${text};
+  text-decoration: none;
+  display: inline-block;
+  &:hover {
+    color: ${blue};
+  }
+`;
+
+const StyledButton = styled(Button)`
+  .MuiSvgIcon-root {
+    width: 16px;
+    height: 16px;
+    margin-right: 3px;
+  }
+`;
+
+const Notes = styled.div`
+  padding: 10px;
 `;
 
 const TaskItem = (props) => {
@@ -88,39 +133,58 @@ const TaskItem = (props) => {
     });
   };
 
+  const toggleStash = async () => {
+    const data = {
+      ...task,
+      stash: !task.stash
+    };
+    try {
+      await firebase.task(task.uid).set(data);
+      console.log('STASH/APPLY >>>>>>');
+    } catch(e) {
+      console.log('STASH/APPLY ERROR:', e);
+    }
+  };
+
   return (
-    <Wrap>
+    <Wrap className={ task.stash ? 'stash' : ''}>
+      <Inner>
       <Head>
         {
-          task.link ? (<a href={task.link} target="_blank"><b>{task.name}</b></a>) : (<b>{task.name}</b>)
+          task.link ? (<Name href={task.link} target="_blank"><b>{task.name}</b></Name>) : (<b>{task.name}</b>)
         }
-
         <StatusSelect status={task.status} setStatus={setStatus} />
-
+        <ShowTime track={task.track} />
       </Head>
-      <Title>{task.title}</Title>
-
-
-      <Branch onClick={copyToClipboard.bind(null, task.branch)}>
-        <StyledTimelineIcon color="primary" /> {task.branch}
-      </Branch>
-
-      <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(task.notes)}} />
-
       {
-        task.track && task.track.length ? (<ShowTime track={task.track} />) : ''
+        task.title && (
+          <Title>{task.title}</Title>
+        )
+      }
+      {
+        task.branch && (
+          <Branch onClick={copyToClipboard.bind(null, task.branch)}>
+            <StyledTimelineIcon color="primary" /> {task.branch}
+          </Branch>
+        )
       }
 
+      <Notes dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(task.notes)}} />
+
+
+
       <div style={{'paddingTop': '10px'}}>
-        <Button
+        <StyledButton
           size="small"
           variant="contained"
-          color="primary"
+          color="secondary"
           onClick={ () => deleteTask(task.uid, task.name) }
         >
+          <DeleteIcon fontSize="small" />
           DELETE
-        </Button>
-        <Button
+        </StyledButton>
+
+        <StyledButton
           style={{'marginLeft': '5px'}}
           size="small"
           variant="contained"
@@ -129,37 +193,45 @@ const TaskItem = (props) => {
         >
           {
             task.track && task.track.length && !task.track[task.track.length - 1].stop ?
-              'STOP' : 'START'
+              (<Fragment><PauseCircleFilledIcon />STOP</Fragment>) :
+              (<Fragment><PlayCircleFilledWhiteIcon />START</Fragment>)
           }
-        </Button>
-        <Button
+        </StyledButton>
+        <StyledButton
           style={{'marginLeft': '5px'}}
           size="small"
           variant="contained"
           color="primary"
           onClick={ () => onEditTask(task) }
         >
+          <EditIcon />
           EDIT
-        </Button>
-        <Button
+        </StyledButton>
+        <StyledButton
           style={{'marginLeft': '5px'}}
           size="small"
           variant="contained"
           color="primary"
           onClick={ () => onCloneTask(task) }
         >
+          <FileCopyIcon />
           CLONE
-        </Button>
-        <Button
+        </StyledButton>
+        <StyledButton
           style={{'marginLeft': '5px'}}
           size="small"
           variant="contained"
           color="primary"
-          onClick={ () => { console.log('STASH'); } }
+          onClick={ toggleStash }
         >
-          STASH
-        </Button>
+          {
+            task.stash ?
+              (<Fragment><UnarchiveIcon />APPLY</Fragment>) :
+              (<Fragment><ArchiveIcon />STASH</Fragment>)
+          }
+        </StyledButton>
       </div>
+      </Inner>
     </Wrap>
   )
 };
