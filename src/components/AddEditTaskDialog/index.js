@@ -12,6 +12,7 @@ import WithToast from '../WithToast';
 import styled from 'styled-components';
 import AddIcon from '@material-ui/icons/Add';
 import Tooltip from '@material-ui/core/Tooltip';
+import { compose } from 'recompose';
 import moment from 'moment';
 
 import { DAY_FORMAT } from '../../constants/dates';
@@ -217,4 +218,7 @@ const AddEditTaskDialog = (props) => {
   );
 };
 
-export default withFirebase(WithToast(AddEditTaskDialog));
+export default compose(
+  withFirebase,
+  WithToast
+)(AddEditTaskDialog);

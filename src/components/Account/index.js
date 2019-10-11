@@ -1,12 +1,16 @@
 import React from 'react';
 import { AuthUserContext, withAuthorization } from '../Session';
-import { PasswordForgetForm } from '../PasswordForget';
+
 import PasswordChangeForm from '../PasswordChange';
 import styled from 'styled-components';
 
-
 import Paper from '@material-ui/core/Paper';
 import {beige} from "../../constants/colors";
+
+
+import PasswordForgetForm from '../../components/PasswordForgetForm';
+
+
 
 const StyledPaper = styled(Paper)`
   max-width: 90%;
@@ -32,7 +36,12 @@ const AccountPage = () => (
       <StyledPaper>
         <Inner>
           <Title>Account: {authUser.email}</Title>
+
+
           <PasswordForgetForm />
+
+
+          <hr/>
           <PasswordChangeForm />
         </Inner>
       </StyledPaper>
