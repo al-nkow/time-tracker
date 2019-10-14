@@ -1,13 +1,15 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 import { AuthUserContext, withAuthorization } from '../Session';
 import { withFirebase } from '../Firebase';
 import TodayIcon from '@material-ui/icons/Today';
 import AddEditTaskDialog from '../AddEditTaskDialog';
-import TaskItem from '../TaskItem';
 import { DAY_FORMAT } from '../../constants/dates';
 import { blue } from '../../constants/colors';
+import TasksList from '../TasksList';
+import { compose } from 'recompose';
+import { TODAY } from '../../constants/dates';
 
 const Separator = styled.div`
   padding: 5px 20px;
@@ -29,18 +31,24 @@ const StyledTodayIcon = styled(TodayIcon)`
   }
 `;
 
-const HomePage = () => (
-  <div>
-    <Tasks />
-  </div>
-);
+const getTasksList = (taskObject) => {
+  return Object.keys(taskObject).map(key => ({
+    ...taskObject[key],
+    uid: key,
+  })).reverse();
+};
 
+const groupTasksByDay = (tasksList) => {
+  return tasksList.reduce((res, item) => {
+    if (!res[item.day]) res[item.day] = [];
+    res[item.day].push(item);
+    return res;
+  }, {});
+};
 
-// ================
-class TasksBase extends Component {
+class HomePage extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       text: '',
       loading: false,
@@ -48,12 +56,7 @@ class TasksBase extends Component {
       groupedList: {},
       edit: null
     };
-
   }
-
-  onRemoveTask = (uid) => {
-    this.props.firebase.task(uid).remove();
-  };
 
   onEditTask = (task) => {
     this.setState({ ...this.state, edit: task });
@@ -64,102 +67,58 @@ class TasksBase extends Component {
   };
 
   componentDidMount() {
+    const { firebase } = this.props;
     this.setState({ loading: true });
 
-    // GET TASKS LIST this.db.ref('tasks')
-    this.props.firebase.tasks().on('value', snapshot => {
+    firebase.tasks().on('value', snapshot => {
 
       // Убрать этот костыль - новый таск создается позже чем срабатывает это событие!
       // надо просто вручную вызывать обновление списка!!!!
       setTimeout(() => {
-
-      console.log('[FIREBASE ON.VALUE EVENT HANDLER] >>>>>>', snapshot);
-      const taskObject = snapshot.val();
-
-      if (taskObject) {
-        const tasksList = Object.keys(taskObject).map(key => ({
-          ...taskObject[key],
-          uid: key,
-        })).reverse();
-
-        // Group tasks by day
-        const groupedList = tasksList.reduce((res, item) => {
-          if (!res[item.day]) res[item.day] = [];
-          res[item.day].push(item);
-          return res;
-        }, {});
-
-        this.setState({ ...this.state, groupedList, tasks: tasksList, loading: false });
-        // this.setState({ tasks: tasksList, loading: false });
-      } else {
-        this.setState({ tasks: null, loading: false });
-      }
-
+        const taskObject = snapshot.val();
+        if (taskObject) {
+          const tasksList = getTasksList(taskObject);
+          const groupedList = groupTasksByDay(tasksList);
+          this.setState({ ...this.state, groupedList, tasks: tasksList, loading: false });
+        } else {
+          this.setState({ tasks: null, loading: false });
+        }
       }, 500);
+      // ====================================================
 
     });
-
   }
+
   componentWillUnmount() {
-    this.props.firebase.tasks().off();
+    const { firebase } = this.props;
+    firebase.tasks().off();
   }
 
   createTask = (data, authUser) => {
-    this.props.firebase.tasks().push({
-      ...data,
-      userId: authUser.uid,
-      createdAt: this.props.firebase.serverValue.TIMESTAMP, // 1569481851697
-    }).then((res) => {
-      console.log('TASK CREATED!!! >>>>>>', res);
-    }).catch((err) => {
-      console.log('ERROR: ', err);
-    });
-  };
-
-  onCloneTask = async (task) => {
-    const data = {
-      name: task.name,
-      title: task.title,
-      link: task.link,
-      branch: task.branch,
-      notes: task.notes,
-      status: 'to_do',
-      day: moment().format(DAY_FORMAT),
-      userId: task.userId,
-    };
-
+    const { firebase } = this.props;
     try {
-      await this.props.firebase.tasks().push({
+      firebase.tasks().push({
         ...data,
-        createdAt: this.props.firebase.serverValue.TIMESTAMP,
+        userId: authUser.uid,
+        createdAt: firebase.serverValue.TIMESTAMP,
       });
-      console.log('TASK CLONED!!! >>>>>>');
     } catch(err) {
-      console.log('ERROR: ', err);
+      console.log('CREATE TASK ERROR: ', err);
     }
   };
 
   render() {
     const { tasks, loading, groupedList, edit } = this.state;
 
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // TODO: ПОЧЕМУ БЛЯДЬ ЭТО ВВОДИТСЯ 5-3 РАЗА?????????????????????????????????????? и больше
-    // может быть как количество дней???? как-то не мутируется?
-    // console.log('?? >>>>>>', groupedList);
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
     return (
       <AuthUserContext.Consumer>
         {authUser => (
           <div>
-
-            {/*<TaskForm submit={(data) => { this.createTask(data, authUser) }}/>*/}
             <AddEditTaskDialog
               edit={edit}
               userId={authUser.uid}
               onStopEdit={ this.onStopEdit }
-              submit={(data) => { this.createTask(data, authUser) }}
+              submit={ (data) => { this.createTask(data, authUser) } }
             />
 
             {loading && <div>Loading ...</div>}
@@ -168,28 +127,16 @@ class TasksBase extends Component {
               tasks ?
                 (
                   Object.keys(groupedList).map((key) => (
-                    <div key={key}>
-
+                    <Fragment key={key}>
                       <Separator>
                         <StyledTodayIcon />
-                        { moment(key, DAY_FORMAT).format('DD.MM.YYYY dddd') }
+                        { moment(key, DAY_FORMAT).format(TODAY) }
                       </Separator>
-
-
-                      {groupedList[key] ? (
-                        <TasksList
-                          tasks={groupedList[key]}
-                          onRemoveTask={this.onRemoveTask}
-                          onEditTask={this.onEditTask}
-                          onCloneTask={this.onCloneTask}
-                        />
-                        ) : (
-                        <div>There are no tasks ...</div>
-                      )}
-
-
-
-                    </div>
+                      <TasksList
+                        tasks={groupedList[key]}
+                        onEditTask={this.onEditTask}
+                      />
+                    </Fragment>
                   ))
                 ) : (
                   <div>No data ...</div>
@@ -202,22 +149,9 @@ class TasksBase extends Component {
   }
 }
 
-const Tasks = withFirebase(TasksBase);
-
-const TasksList = ({ tasks, onRemoveTask, onEditTask, onCloneTask }) => (
-  <div>
-    {tasks.map(task => (
-      <TaskItem
-        key={task.uid}
-        task={task}
-        onRemoveTask={onRemoveTask}
-        onEditTask={onEditTask}
-        onCloneTask={onCloneTask}
-      />
-    ))}
-  </div>
-);
-
 const condition = authUser => !!authUser;
 
-export default withAuthorization(condition)(HomePage);
+export default compose(
+  withFirebase,
+  withAuthorization(condition),
+)(HomePage);

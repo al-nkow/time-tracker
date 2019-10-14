@@ -3,13 +3,11 @@ import styled from 'styled-components';
 import { compose } from 'recompose';
 import { withFirebase } from '../Firebase';
 import WithConfirmAction from '../WithConfirmAction';
-
+import WithToast from '../WithToast';
 import DOMPurify from 'dompurify';
-
 import TimelineIcon from '@material-ui/icons/Timeline';
 import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
 import PauseCircleFilledIcon from '@material-ui/icons/PauseCircleFilled';
-
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -17,11 +15,11 @@ import EditIcon from '@material-ui/icons/Edit';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import ArchiveIcon from '@material-ui/icons/Archive';
 import UnarchiveIcon from '@material-ui/icons/Unarchive';
-
 import StatusSelect from '../StatusSelect';
 import ShowTime from '../ShowTime';
-
 import { beige, text, blue } from '../../constants/colors';
+import moment from 'moment';
+import {DAY_FORMAT} from "../../constants/dates";
 
 const Wrap = styled(Paper)`
   padding: 10px;
@@ -86,7 +84,59 @@ const Notes = styled.div`
 `;
 
 const TaskItem = (props) => {
-  const { task, confirm, onRemoveTask, onEditTask, onCloneTask, firebase } = props;
+  const { task, confirm, onEditTask, firebase, openToast } = props;
+
+  const errorHandler = (consoleText, err) => {
+    console.log(consoleText + ': ', err);
+    const ERROR = err && err.message ? err.message : 'ERROR';
+    openToast({
+      message: ERROR,
+      type: 'error'
+    });
+  };
+
+  const onRemoveTask = (uid) => {
+    try {
+      firebase.task(uid).remove();
+    } catch(err) {
+      errorHandler('REMOVE TASK ERROR', err);
+    }
+  };
+
+  const onCloneTask = async () => {
+    const data = {
+      name: task.name,
+      title: task.title,
+      link: task.link,
+      branch: task.branch,
+      notes: task.notes,
+      status: 'to_do',
+      day: moment().format(DAY_FORMAT),
+      userId: task.userId,
+    };
+
+    try {
+      await firebase.tasks().push({
+        ...data, createdAt: firebase.serverValue.TIMESTAMP
+      });
+      openToast({
+        message: 'Task cloned',
+        type: 'success'
+      });
+    } catch(err) {
+      errorHandler('CLONE TASK ERROR', err);
+    }
+  };
+
+  const deleteTask = (id, name) => {
+    confirm({
+      message: `Are you sure you want to delete task ${name}? This action cannot be undone.`
+    }).then(() => {
+      onRemoveTask(id);
+    }).catch(() => {
+      console.log('Delete action canceled by user');
+    });
+  };
 
   const setTimer = () => {
     const time = Date.now();
@@ -109,28 +159,13 @@ const TaskItem = (props) => {
   };
 
   const setStatus = async (status) => {
-    const data = {
-      ...task,
-      status
-    };
-
+    const data = { ...task, status };
 
     try {
       await firebase.task(task.uid).set(data);
-      console.log('STATUS SET >>>>>>');
-    } catch(e) {
-      console.log('SET STATUS ERROR:', e);
+    } catch(err) {
+      errorHandler('SET STATUS ERROR', err);
     }
-  };
-
-  const deleteTask = (id, name) => {
-    confirm({
-      message: `Are you sure you want to delete task ${name}? This action cannot be undone.`
-    }).then(() => {
-      onRemoveTask(id);
-    }).catch(() => {
-      console.log('Delete action canceled by user');
-    });
   };
 
   const toggleStash = async () => {
@@ -140,9 +175,8 @@ const TaskItem = (props) => {
     };
     try {
       await firebase.task(task.uid).set(data);
-      console.log('STASH/APPLY >>>>>>');
-    } catch(e) {
-      console.log('STASH/APPLY ERROR:', e);
+    } catch(err) {
+      errorHandler('STASH/APPLY ERROR', err);
     }
   };
 
@@ -170,8 +204,6 @@ const TaskItem = (props) => {
       }
 
       <Notes dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(task.notes)}} />
-
-
 
       <div style={{'paddingTop': '10px'}}>
         <StyledButton
@@ -212,7 +244,7 @@ const TaskItem = (props) => {
           size="small"
           variant="contained"
           color="primary"
-          onClick={ () => onCloneTask(task) }
+          onClick={ onCloneTask }
         >
           <FileCopyIcon />
           CLONE
@@ -239,4 +271,5 @@ const TaskItem = (props) => {
 export default compose(
   withFirebase,
   WithConfirmAction,
+  WithToast
 )(TaskItem);
