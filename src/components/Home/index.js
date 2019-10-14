@@ -10,6 +10,8 @@ import { blue } from '../../constants/colors';
 import TasksList from '../TasksList';
 import { compose } from 'recompose';
 import { TODAY } from '../../constants/dates';
+import Spinner from '../Spinner';
+import NoTasks from '../NoTasks';
 
 const Separator = styled.div`
   padding: 5px 20px;
@@ -54,16 +56,21 @@ class HomePage extends Component {
       loading: false,
       tasks: [],
       groupedList: {},
-      edit: null
+      edit: null,
+      open: false
     };
   }
 
   onEditTask = (task) => {
     this.setState({ ...this.state, edit: task });
   };
+  
+  createTask = () => {
+    this.setState({ ...this.state, open: true });
+  };
 
   onStopEdit = () => {
-    this.setState({ ...this.state, edit: null });
+    this.setState({ ...this.state, edit: null, open: false });
   };
 
   componentDidMount() {
@@ -73,7 +80,7 @@ class HomePage extends Component {
     firebase.tasks().on('value', snapshot => {
 
       // Убрать этот костыль - новый таск создается позже чем срабатывает это событие!
-      // надо просто вручную вызывать обновление списка!!!!
+      // надо просто вручную вызывать обновление списка!!!! (не обновляется после EDIT!!!!)
       setTimeout(() => {
         const taskObject = snapshot.val();
         if (taskObject) {
@@ -94,21 +101,8 @@ class HomePage extends Component {
     firebase.tasks().off();
   }
 
-  createTask = (data, authUser) => {
-    const { firebase } = this.props;
-    try {
-      firebase.tasks().push({
-        ...data,
-        userId: authUser.uid,
-        createdAt: firebase.serverValue.TIMESTAMP,
-      });
-    } catch(err) {
-      console.log('CREATE TASK ERROR: ', err);
-    }
-  };
-
   render() {
-    const { tasks, loading, groupedList, edit } = this.state;
+    const { tasks, loading, groupedList, edit, open } = this.state;
 
     return (
       <AuthUserContext.Consumer>
@@ -116,31 +110,30 @@ class HomePage extends Component {
           <div>
             <AddEditTaskDialog
               edit={edit}
+              outerOpen={open}
               userId={authUser.uid}
               onStopEdit={ this.onStopEdit }
-              submit={ (data) => { this.createTask(data, authUser) } }
             />
 
-            {loading && <div>Loading ...</div>}
+            { loading && <Spinner /> }
 
             {
-              tasks ?
-                (
-                  Object.keys(groupedList).map((key) => (
-                    <Fragment key={key}>
-                      <Separator>
-                        <StyledTodayIcon />
-                        { moment(key, DAY_FORMAT).format(TODAY) }
-                      </Separator>
-                      <TasksList
-                        tasks={groupedList[key]}
-                        onEditTask={this.onEditTask}
-                      />
-                    </Fragment>
-                  ))
-                ) : (
-                  <div>No data ...</div>
-                )
+              !tasks ? (
+                Object.keys(groupedList).map((key) => (
+                  <Fragment key={key}>
+                    <Separator>
+                      <StyledTodayIcon />
+                      { moment(key, DAY_FORMAT).format(TODAY) }
+                    </Separator>
+                    <TasksList
+                      tasks={groupedList[key]}
+                      onEditTask={this.onEditTask}
+                    />
+                  </Fragment>
+                ))
+              ) : (
+                <NoTasks create={ this.createTask }/>
+              )
             }
           </div>
         )}

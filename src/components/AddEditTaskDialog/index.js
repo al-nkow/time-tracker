@@ -25,7 +25,7 @@ const Controls = styled.div`
 `;
 
 const AddEditTaskDialog = (props) => {
-  const { edit, onStopEdit, userId, firebase, openToast } = props;
+  const { edit, onStopEdit, userId, firebase, openToast, outerOpen } = props;
   const [open, setOpen] = React.useState(false);
   const [values, setValues] = React.useState({
     name: '', title: '', link: '', branch: '', notes: ''
@@ -128,6 +128,10 @@ const AddEditTaskDialog = (props) => {
       });
     }
   }, [edit]);
+
+  React.useEffect(() => {
+    if (outerOpen) setOpen(true);
+  }, [outerOpen]);
 
   return (
     <div>
