@@ -1,11 +1,10 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import SendIcon from '@material-ui/icons/Send';
-import styled from 'styled-components';
-import { compose } from 'recompose';
-import { validateEmail } from '../../service/validation';
 import { withFirebase } from '../Firebase';
+import styled from 'styled-components';
+import Button from '@material-ui/core/Button';
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import TextField from '@material-ui/core/TextField';
+import { compose } from 'recompose';
 import WithToast from '../WithToast';
 
 const StyledButton = styled(Button)`
@@ -25,40 +24,29 @@ const Wrap = styled.div`
   margin-bottom: 20px;
 `;
 
-const PasswordForgetForm = ({ firebase, openToast }) => {
+const PasswordChangeForm = ({ firebase, openToast }) => {
+  const ERROR_TEXT = 'Passwords do not match';
   const [values, setValues] = React.useState({
-    email: ''
+    passwordOne: '',
+    passwordTwo: ''
   });
-
-  const [errors, setErrors] = React.useState({
-    email: ''
-  });
-
-  const rules = {
-    email: checkEmail
-  };
-
-  function checkEmail (value) {
-    return validateEmail(value) || !value ? '' : 'Wrong address format';
-  }
 
   const handleChange = name => event => {
     const value = event.target.value;
     setValues({ ...values, [name]: value });
-    setErrors({ ...errors, [name]: rules[name](value) });
   };
 
   const onSubmit = async () => {
-    const { email } = values;
+    const { passwordOne } = values;
     try {
-      await firebase.doPasswordReset(email);
-      setValues({ email: '' });
+      await firebase.doPasswordUpdate(passwordOne);
+      setValues({ passwordOne: '', passwordTwo: '' });
       openToast({
-        message: 'Check your mail',
+        message: 'Password updated',
         type: 'success'
       });
     } catch(err) {
-      console.log('RESET PASSWORD ERROR', err);
+      console.log('UPDATE PASSWORD ERROR', err);
       const ERROR = err && err.message ? err.message : 'ERROR';
       openToast({
         message: ERROR,
@@ -67,16 +55,28 @@ const PasswordForgetForm = ({ firebase, openToast }) => {
     }
   };
 
+  const disabled = !values.passwordOne || !values.passwordTwo || values.passwordOne !== values.passwordTwo;
+  const helper = values.passwordOne !== values.passwordTwo ? ERROR_TEXT : '';
+
   return (
     <Wrap>
       <form noValidate autoComplete="off">
+        <TextField
+          id="email-address"
+          label="New password *"
+          value={ values.passwordOne }
+          onChange={ handleChange('passwordOne') }
+          helperText={ helper }
+          margin="normal"
+          fullWidth
+        />
         <Row>
           <TextField
             id="email-address"
-            label="Email Address *"
-            value={ values.email }
-            onChange={ handleChange('email') }
-            helperText={ errors.email }
+            label="Repeat new password *"
+            value={ values.passwordTwo }
+            onChange={ handleChange('passwordTwo') }
+            helperText={ helper }
             margin="normal"
             fullWidth
           />
@@ -86,9 +86,9 @@ const PasswordForgetForm = ({ firebase, openToast }) => {
           variant="contained"
           color="secondary"
           onClick={ onSubmit }
-          disabled={ !values.email || !!errors.email }
+          disabled={ disabled }
         >
-          <SendIcon fontSize="small" />
+          <RotateLeftIcon fontSize="small" />
           Reset my password
         </StyledButton>
       </form>
@@ -99,4 +99,4 @@ const PasswordForgetForm = ({ firebase, openToast }) => {
 export default compose(
   withFirebase,
   WithToast,
-)(PasswordForgetForm);
+)(PasswordChangeForm);

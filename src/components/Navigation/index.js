@@ -16,7 +16,7 @@ import styled from 'styled-components';
 
 const Wrap = styled.div`
   position: fixed;
-  top: 100px;
+  top: 69px;
   left: 30px;
   width: 58px;
 `;

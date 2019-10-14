@@ -19,7 +19,7 @@ import { DAY_FORMAT } from '../../constants/dates';
 
 const Controls = styled.div`
   position: fixed;
-  top: 100px;
+  top: 69px;
   right: 30px;
   width: 58px;
 `;
