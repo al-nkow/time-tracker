@@ -21,7 +21,6 @@ const Row = styled.div`
 `;
 
 const Wrap = styled.div`
-  padding: 10px;
   margin-bottom: 20px;
 `;
 

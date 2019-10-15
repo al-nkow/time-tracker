@@ -32,7 +32,8 @@ const WithToast = Component => {
       this.setState({
         open: true,
         message: options.message,
-        type: options.type
+        type: options.type,
+        duration: options.duration || 1000
       });
     };
 
@@ -40,7 +41,8 @@ const WithToast = Component => {
       this.setState({
         open: false,
         message: '',
-        type: ''
+        type: '',
+        duration: 1000
       });
     };
 
@@ -55,7 +57,7 @@ const WithToast = Component => {
           }}
           className={this.state.type}
           open={this.state.open}
-          autoHideDuration={1000}
+          autoHideDuration={this.state.duration}
           onClose={this.handleClose}
           ContentProps={{
             'aria-describedby': 'message-id',

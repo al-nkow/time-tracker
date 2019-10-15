@@ -1,5 +1,5 @@
 import { createMuiTheme } from '@material-ui/core/styles';
-import { blue, red, text, textLight } from './constants/colors';
+import { blue, red, text } from './constants/colors';
 
 export default createMuiTheme({
   palette: {
@@ -28,6 +28,11 @@ export default createMuiTheme({
     MuiTextField: {
       root: {
         marginTop: '8px'
+      }
+    },
+    MuiFormControlLabel: {
+      label: {
+        fontSize: '14px',
       }
     },
     MuiInputLabel: {

@@ -1,11 +1,11 @@
 import React from 'react';
 import PasswordForgetForm from '../../components/PasswordForgetForm';
-import {StyledPaper, Inner} from '../Shared';
+import { StyledPaper, Inner, CardTitle } from '../Shared';
 
 const PasswordForgetPage = () => (
   <StyledPaper>
     <Inner>
-      <h1>PasswordForget</h1>
+      <CardTitle>Forgot password</CardTitle>
       <PasswordForgetForm />
     </Inner>
   </StyledPaper>

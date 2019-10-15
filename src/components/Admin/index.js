@@ -1,11 +1,13 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { compose } from 'recompose';
 
 import { withFirebase } from '../Firebase';
 import { withAuthorization } from '../Session';
 import * as ROLES from '../../constants/roles';
 
-import {StyledPaper, Inner} from '../Shared';
+import { StyledPaper, Inner, Block } from '../Shared';
+import Spinner from '../Spinner';
+import { blue } from '../../constants/colors';
 
 
 class AdminPage extends Component {
@@ -42,14 +44,7 @@ class AdminPage extends Component {
 
     });
 
-
-
-
   }
-
-
-
-
 
 
 
@@ -59,26 +54,25 @@ class AdminPage extends Component {
   render() {
     const { users, loading } = this.state;
     return (
-      <StyledPaper>
-        <Inner>
-          <h1>Admin</h1>
-          {loading && <div>Loading ...</div>}
-          <UserList users={users} />
-        </Inner>
-      </StyledPaper>
+      <Fragment>
+        { loading ? <Spinner /> : (
+          <StyledPaper>
+            <Inner>
+              <UserList users={users} />
+            </Inner>
+          </StyledPaper>
+        ) }
+      </Fragment>
     );
   }
 }
 
 const UserList = ({ users }) => (
-  <ul>
+  <div>
     {users.map(user => (
-      <li key={user.uid}>
+      <Block key={user.uid}>
         <div>
-          <strong>ID:</strong> {user.uid}
-        </div>
-        <div>
-          <strong>E-Mail:</strong> {user.email}
+          <strong>E-Mail:</strong> <span style={{color: blue}}>{user.email}</span>
         </div>
         <div>
           <strong>Username:</strong> {user.username}
@@ -86,9 +80,12 @@ const UserList = ({ users }) => (
         <div>
           <strong>Admin:</strong> {user.roles && user.roles.ADMIN ? 'TRUE' : 'FALSE'}
         </div>
-      </li>
+        <div>
+          <strong>ID:</strong> {user.uid}
+        </div>
+      </Block>
     ))}
-  </ul>
+  </div>
 );
 
 

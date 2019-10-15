@@ -14,3 +14,11 @@ export const Inner = styled.div`
   border-radius: 4px;
   background: ${beige};
 `;
+
+export const CardTitle = styled.div`
+  font-size: 22px;
+`;
+
+export const Block = styled.div`
+  margin-bottom: 20px;
+`;

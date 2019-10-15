@@ -20,8 +20,7 @@ const Row = styled.div`
 `;
 
 const Wrap = styled.div`
-  padding: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 `;
 
 const PasswordChangeForm = ({ firebase, openToast }) => {

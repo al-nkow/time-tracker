@@ -4,7 +4,6 @@ import { withFirebase } from '../Firebase';
 import { AuthUserContext } from '../Session';
 import Fab from '@material-ui/core/Fab';
 import Tooltip from '@material-ui/core/Tooltip';
-import LandscapeIcon from '@material-ui/icons/Landscape';
 import HomeIcon from '@material-ui/icons/Home';
 import PersonIcon from '@material-ui/icons/Person';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
@@ -40,13 +39,6 @@ const Navigation = ({firebase}) => (
 
 const NavigationAuth = ({ authUser, firebase }) => (
   <Wrap>
-    <Tooltip title="Landing" placement="right" enterDelay={500}>
-      <MenuItem to={ ROUTES.LANDING }>
-        <Fab color="primary" aria-label="edit">
-          <LandscapeIcon />
-        </Fab>
-      </MenuItem>
-    </Tooltip>
     <Tooltip title="Home" placement="right" enterDelay={500}>
       <MenuItem to={ ROUTES.HOME }>
         <Fab color="primary" aria-label="edit">
@@ -82,13 +74,6 @@ const NavigationAuth = ({ authUser, firebase }) => (
 
 const NavigationNonAuth = () => (
   <Wrap>
-    <Tooltip title="Landing" placement="right" enterDelay={500}>
-      <MenuItem to={ ROUTES.LANDING }>
-        <Fab color="primary" aria-label="edit">
-          <LandscapeIcon />
-        </Fab>
-      </MenuItem>
-    </Tooltip>
     <Tooltip title="Sign in" placement="right" enterDelay={500}>
       <MenuItem to={ ROUTES.SIGN_IN }>
         <Fab color="primary" aria-label="edit">

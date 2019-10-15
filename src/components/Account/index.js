@@ -8,13 +8,12 @@ import {StyledPaper, Inner} from '../Shared';
 
 const Title = styled.div`
   font-size: 22px;
-  padding: 10px 10px 0 10px;
   color: ${blue};
 `;
 
 const Name = styled.div`
   font-size: 14px;
-  padding: 0 10px 20px 10px;
+  margin-bottom: 10px;
   color: ${violet};
 `;
 
