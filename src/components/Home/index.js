@@ -64,7 +64,7 @@ class HomePage extends Component {
   onEditTask = (task) => {
     this.setState({ ...this.state, edit: task });
   };
-  
+
   createTask = () => {
     this.setState({ ...this.state, open: true });
   };
@@ -118,7 +118,7 @@ class HomePage extends Component {
             { loading && <Spinner /> }
 
             {
-              !tasks ? (
+              tasks ? (
                 Object.keys(groupedList).map((key) => (
                   <Fragment key={key}>
                     <Separator>

@@ -5,6 +5,8 @@ import { withFirebase } from '../Firebase';
 import { withAuthorization } from '../Session';
 import * as ROLES from '../../constants/roles';
 
+import {StyledPaper, Inner} from '../Shared';
+
 
 class AdminPage extends Component {
   constructor(props) {
@@ -57,14 +59,13 @@ class AdminPage extends Component {
   render() {
     const { users, loading } = this.state;
     return (
-      <div>
-        <h1>Admin</h1>
-        <p>
-          The Admin Page is accessible by every signed in admin user.
-        </p>
-        {loading && <div>Loading ...</div>}
-        <UserList users={users} />
-      </div>
+      <StyledPaper>
+        <Inner>
+          <h1>Admin</h1>
+          {loading && <div>Loading ...</div>}
+          <UserList users={users} />
+        </Inner>
+      </StyledPaper>
     );
   }
 }

@@ -1,82 +1,138 @@
-import React, { Component } from 'react';
-import {Link, withRouter} from 'react-router-dom';
+import React from 'react';
+import { Link, withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
-import { SignUpLink } from '../SignUp';
 import { withFirebase } from '../Firebase';
+import WithToast from '../WithToast';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import LockIcon from '@material-ui/icons/Lock';
+import EmailIcon from '@material-ui/icons/Email';
+import { StyledPaper, Inner } from '../Shared';
+import styled from 'styled-components';
 import * as ROUTES from '../../constants/routes';
+import { slateblue, blue, textLight } from '../../constants/colors';
 
-const PasswordForgetLink = () => (
-  <p>
-    <Link to={ROUTES.PASSWORD_FORGET}>Forgot Password?</Link>
-  </p>
-);
+const Row = styled.div`
+  margin-bottom: 10px;
+`;
+
+const StyledButton = styled(Button)`
+  &.MuiButton-root {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+`;
+
+const FootLink = styled(Link)`
+  font-size: 14px;
+  color: ${slateblue};
+  text-decoration: none;
+  &:hover {
+    color: ${blue};
+  }
+`;
+
+const LinkWrap = styled.p`
+  margin: 10px 0;
+`;
+
+const StyledInputAdornment = styled(InputAdornment)`
+  .MuiSvgIcon-root {
+    color: ${textLight};
+  }
+`;
 
 const SignInPage = () => (
-  <div>
-    <h1>SignIn</h1>
-    <SignInForm />
-    <PasswordForgetLink />
-    <SignUpLink />
-  </div>
+  <StyledPaper>
+    <Inner>
+      <SignInForm />
+      <LinkWrap>
+        <FootLink to={ROUTES.PASSWORD_FORGET}>Forgot Password?</FootLink>
+      </LinkWrap>
+      <LinkWrap>
+        <FootLink to={ROUTES.SIGN_UP}>Don't have an account? Sign Up</FootLink>
+      </LinkWrap>
+    </Inner>
+  </StyledPaper>
 );
 
-const INITIAL_STATE = {
-  email: '',
-  password: '',
-  error: null,
-};
+const SignInFormBase = ({ firebase, history, openToast }) => {
+  const [values, setValues] = React.useState({
+    email: '', password: ''
+  });
 
-class SignInFormBase extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { ...INITIAL_STATE };
-  }
-  onSubmit = event => {
-    const { email, password } = this.state;
-    this.props.firebase
+  const handleChange = name => event => {
+    const value = event.target.value;
+    setValues({ ...values, [name]: value });
+  };
+
+  const onSubmit = () => {
+    const { email, password } = values;
+    firebase
       .doSignInWithEmailAndPassword(email, password)
       .then(() => {
-        this.setState({ ...INITIAL_STATE });
-        this.props.history.push(ROUTES.HOME);
+        setValues({ email: '', password: '' });
+        history.push(ROUTES.HOME);
       })
-      .catch(error => {
-        this.setState({ error });
+      .catch(() => {
+        openToast({
+          message: 'Email or password is incorrect',
+          type: 'error'
+        });
       });
-    event.preventDefault();
   };
-  onChange = event => {
-    this.setState({ [event.target.name]: event.target.value });
-  };
-  render() {
-    const { email, password, error } = this.state;
-    const isInvalid = password === '' || email === '';
-    return (
-      <form onSubmit={this.onSubmit}>
-        <input
-          name="email"
-          value={email}
-          onChange={this.onChange}
-          type="text"
-          placeholder="Email Address"
+
+  return (
+    <form noValidate autoComplete="off">
+      <Row>
+        <TextField
+          id="signin-email"
+          label="Email Address"
+          value={ values.email }
+          onChange={ handleChange('email') }
+          margin="normal"
+          fullWidth
+          InputProps={{
+            endAdornment: <StyledInputAdornment position="end">
+              <EmailIcon />
+            </StyledInputAdornment>,
+          }}
         />
-        <input
-          name="password"
-          value={password}
-          onChange={this.onChange}
+      </Row>
+      <Row>
+        <TextField
+          id="signin-password"
+          label="Password"
           type="password"
-          placeholder="Password"
+          value={ values.password }
+          onChange={ handleChange('password') }
+          margin="normal"
+          fullWidth
+          InputProps={{
+            endAdornment: <StyledInputAdornment position="end">
+              <LockIcon />
+            </StyledInputAdornment>,
+          }}
         />
-        <button disabled={isInvalid} type="submit">
+        <StyledButton
+          fullWidth
+          variant="contained"
+          color="primary"
+          onClick={ onSubmit }
+          disabled={ !values.email || !values.password }
+        >
           Sign In
-        </button>
-        {error && <p>{error.message}</p>}
-      </form>
-    );
-  }
-}
+        </StyledButton>
+      </Row>
+    </form>
+  );
+};
+
 const SignInForm = compose(
+  WithToast,
   withRouter,
   withFirebase,
 )(SignInFormBase);
+
 export default SignInPage;
-export { SignInForm };

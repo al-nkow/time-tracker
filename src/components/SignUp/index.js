@@ -7,6 +7,8 @@ import * as ROUTES from '../../constants/routes';
 
 import * as ROLES from '../../constants/roles';
 
+import {StyledPaper, Inner} from '../Shared';
+
 
 const INITIAL_STATE = {
   username: '',
@@ -20,13 +22,15 @@ const INITIAL_STATE = {
 
 
 const SignUpPage = () => (
-  <div>
-    <h1>SignUp</h1>
-    <SignUpForm />
-    {/*<FirebaseContext.Consumer>*/}
-      {/*{firebase => <SignUpForm firebase={firebase} />}*/}
-    {/*</FirebaseContext.Consumer>*/}
-  </div>
+  <StyledPaper>
+    <Inner>
+      <h1>SignUp</h1>
+      <SignUpForm />
+      {/*<FirebaseContext.Consumer>*/}
+        {/*{firebase => <SignUpForm firebase={firebase} />}*/}
+      {/*</FirebaseContext.Consumer>*/}
+    </Inner>
+  </StyledPaper>
 );
 
 
