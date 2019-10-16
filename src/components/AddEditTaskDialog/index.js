@@ -22,6 +22,11 @@ const Controls = styled.div`
   top: 69px;
   right: 30px;
   width: 58px;
+  @media (max-width: 480px) {
+    top: auto;
+    bottom: 20px;
+    right: 20px;
+  }
 `;
 
 const AddEditTaskDialog = props => {

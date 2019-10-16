@@ -20,6 +20,10 @@ const Separator = styled.div`
   background: ${blue};
   border-radius: 4px;
   margin: 0 10px;
+  @media (max-width: 480px) {
+    margin: 0;
+    width: 100%;
+  }
 `;
 
 const StyledTodayIcon = styled(TodayIcon)`

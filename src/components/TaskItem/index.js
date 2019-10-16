@@ -77,10 +77,23 @@ const StyledButton = styled(Button)`
     height: 16px;
     margin-right: 3px;
   }
+  &.MuiButton-root {
+    @media (max-width: 480px) {
+      min-width: 10px;
+      min-height: 30px;
+    }
+  }
 `;
 
 const Notes = styled.div`
   padding: 10px;
+  word-break: break-word;
+`;
+
+const ButtonName = styled.span`
+  @media (max-width: 480px) {
+    display: none;
+  }
 `;
 
 const TaskItem = props => {
@@ -216,7 +229,7 @@ const TaskItem = props => {
             onClick={() => deleteTask(task.uid, task.name)}
           >
             <DeleteIcon fontSize="small" />
-            DELETE
+            <ButtonName>DELETE</ButtonName>
           </StyledButton>
           <StyledButton
             style={{ marginLeft: '5px' }}
@@ -230,12 +243,12 @@ const TaskItem = props => {
             !task.track[task.track.length - 1].stop ? (
               <Fragment>
                 <PauseCircleFilledIcon />
-                STOP
+                <ButtonName>STOP</ButtonName>
               </Fragment>
             ) : (
               <Fragment>
                 <PlayCircleFilledWhiteIcon />
-                START
+                <ButtonName>START</ButtonName>
               </Fragment>
             )}
           </StyledButton>
@@ -247,7 +260,7 @@ const TaskItem = props => {
             onClick={() => onEditTask(task)}
           >
             <EditIcon />
-            EDIT
+            <ButtonName>EDIT</ButtonName>
           </StyledButton>
           <StyledButton
             style={{ marginLeft: '5px' }}
@@ -257,7 +270,7 @@ const TaskItem = props => {
             onClick={onCloneTask}
           >
             <FileCopyIcon />
-            CLONE
+            <ButtonName>CLONE</ButtonName>
           </StyledButton>
           <StyledButton
             style={{ marginLeft: '5px' }}
@@ -269,12 +282,12 @@ const TaskItem = props => {
             {task.stash ? (
               <Fragment>
                 <UnarchiveIcon />
-                APPLY
+                <ButtonName>APPLY</ButtonName>
               </Fragment>
             ) : (
               <Fragment>
                 <ArchiveIcon />
-                STASH
+                <ButtonName>STASH</ButtonName>
               </Fragment>
             )}
           </StyledButton>

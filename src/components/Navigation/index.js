@@ -14,10 +14,19 @@ import * as ROUTES from '../../constants/routes';
 import * as ROLES from '../../constants/roles';
 
 const Wrap = styled.div`
+  z-index: 1000;
   position: fixed;
   top: 69px;
   left: 30px;
   width: 58px;
+  @media (max-width: 480px) {
+    top: auto;
+    bottom: 20px;
+    left: 20px;
+    .hide-mob {
+      display: none;
+    }
+  }
 `;
 
 const MenuItem = styled(Link)`
@@ -40,14 +49,14 @@ const Navigation = ({ firebase }) => (
 const NavigationAuth = ({ authUser, firebase }) => (
   <Wrap>
     <Tooltip title="Home" placement="right" enterDelay={500}>
-      <MenuItem to={ROUTES.HOME}>
+      <MenuItem to={ROUTES.HOME} className="hide-mob">
         <Fab color="primary" aria-label="edit">
           <HomeIcon />
         </Fab>
       </MenuItem>
     </Tooltip>
     <Tooltip title="Account" placement="right" enterDelay={500}>
-      <MenuItem to={ROUTES.ACCOUNT}>
+      <MenuItem to={ROUTES.ACCOUNT} className="hide-mob">
         <Fab color="primary" aria-label="edit">
           <PersonIcon />
         </Fab>
@@ -55,7 +64,7 @@ const NavigationAuth = ({ authUser, firebase }) => (
     </Tooltip>
     {!!authUser.roles[ROLES.ADMIN] && (
       <Tooltip title="Admin" placement="right" enterDelay={500}>
-        <MenuItem to={ROUTES.ADMIN}>
+        <MenuItem to={ROUTES.ADMIN} className="hide-mob">
           <Fab color="primary" aria-label="edit">
             <SettingsIcon />
           </Fab>
