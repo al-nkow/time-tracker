@@ -55,7 +55,8 @@ const AddEditTaskDialog = props => {
       notes: '',
     });
     setOpen(false);
-    onStopEdit();
+
+    if (outerOpen) onStopEdit();
   };
 
   const handleChange = name => event => {

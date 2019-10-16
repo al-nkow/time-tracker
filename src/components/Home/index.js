@@ -53,7 +53,6 @@ class HomePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      text: '',
       loading: false,
       tasks: [],
       groupedList: {},
@@ -74,24 +73,26 @@ class HomePage extends Component {
       .equalTo(authUser.uid)
       .limitToLast(100)
       .on('value', snapshot => {
-        // Убрать этот костыль - новый таск создается позже чем срабатывает это событие!
-        // надо просто вручную вызывать обновление списка!!!! (не обновляется после EDIT!!!!)
-        setTimeout(() => {
-          const taskObject = snapshot.val();
-          if (taskObject) {
-            const tasksList = getTasksList(taskObject);
-            const groupedList = groupTasksByDay(tasksList);
-            this.setState({
-              ...this.state,
-              groupedList,
-              tasks: tasksList,
-              loading: false,
-            });
-          } else {
-            this.setState({ tasks: null, loading: false });
-          }
-        }, 500);
-        // ====================================================
+        const taskObject = Object.assign({}, snapshot.val());
+        if (taskObject) {
+          const tasksList = getTasksList(taskObject);
+          const groupedList = groupTasksByDay(tasksList);
+          this.setState({
+            loading: false,
+            tasks: tasksList,
+            groupedList,
+            edit: null,
+            open: false,
+          });
+        } else {
+          this.setState({
+            groupedList: null,
+            tasks: null,
+            loading: false,
+            edit: null,
+            open: false,
+          });
+        }
       });
   }
 
