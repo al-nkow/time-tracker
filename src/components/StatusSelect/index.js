@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -9,7 +8,6 @@ import AlarmOnIcon from '@material-ui/icons/AlarmOn';
 import RateReviewIcon from '@material-ui/icons/RateReview';
 import AdbIcon from '@material-ui/icons/Adb';
 import DoneIcon from '@material-ui/icons/Done';
-
 import { blue } from '../../constants/colors';
 
 const StyledMenuItem = styled(MenuItem)`
@@ -42,35 +40,35 @@ const StyledButton = styled(Button)`
 `;
 
 const statusList = {
-  'to_do': {
+  to_do: {
     name: 'To Do',
-    icon: (<PlayCircleOutlineIcon />)
+    icon: <PlayCircleOutlineIcon />,
   },
-  'in_progress': {
+  in_progress: {
     name: 'In Progress',
-    icon: (<AlarmOnIcon />)
+    icon: <AlarmOnIcon />,
   },
-  'in_review': {
+  in_review: {
     name: 'In Review',
-    icon: (<RateReviewIcon />)
+    icon: <RateReviewIcon />,
   },
-  'in_testing': {
+  in_testing: {
     name: 'In Testing',
-    icon: (<AdbIcon />)
+    icon: <AdbIcon />,
   },
-  'done': {
+  done: {
     name: 'Done',
-    icon: (<DoneIcon />)
-  }
+    icon: <DoneIcon />,
+  },
 };
 
-const StatusSelect = (props) => {
+const StatusSelect = props => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const status = props.status || 'to_do';
 
-  const handleCloseStatus = (status) => {
+  const handleCloseStatus = st => {
     setAnchorEl(null);
-    if (status) props.setStatus(status);
+    if (st) props.setStatus(st);
   };
 
   const handleClickStatus = event => {
@@ -85,28 +83,26 @@ const StatusSelect = (props) => {
         aria-haspopup="true"
         onClick={handleClickStatus}
       >
-        { statusList[status].icon }
-        <span className="name">{ statusList[status].name }</span>
+        {statusList[status].icon}
+        <span className="name">{statusList[status].name}</span>
       </StyledButton>
       <Menu
         id="status-menu"
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
-        onClose={ handleCloseStatus.bind(null, '') }
+        onClose={() => handleCloseStatus('')}
       >
-        {
-          Object.keys(statusList).map((key) => {
-            return (
-              <StyledMenuItem key={key} onClick={ () => handleCloseStatus(key) }>
-                { statusList[key].icon } { statusList[key].name }
-              </StyledMenuItem>
-            )
-          })
-        }
+        {Object.keys(statusList).map(key => {
+          return (
+            <StyledMenuItem key={key} onClick={() => handleCloseStatus(key)}>
+              {statusList[key].icon} {statusList[key].name}
+            </StyledMenuItem>
+          );
+        })}
       </Menu>
     </span>
-  )
+  );
 };
 
 export default StatusSelect;

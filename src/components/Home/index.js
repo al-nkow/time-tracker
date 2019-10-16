@@ -1,17 +1,16 @@
 import React, { Component, Fragment } from 'react';
+import { compose } from 'recompose';
 import styled from 'styled-components';
 import moment from 'moment';
+import TodayIcon from '@material-ui/icons/Today';
 import { AuthUserContext, withAuthorization } from '../Session';
 import { withFirebase } from '../Firebase';
-import TodayIcon from '@material-ui/icons/Today';
 import AddEditTaskDialog from '../AddEditTaskDialog';
-import { DAY_FORMAT } from '../../constants/dates';
-import { blue } from '../../constants/colors';
 import TasksList from '../TasksList';
-import { compose } from 'recompose';
-import { TODAY } from '../../constants/dates';
 import Spinner from '../Spinner';
 import NoTasks from '../NoTasks';
+import { blue } from '../../constants/colors';
+import { TODAY, DAY_FORMAT } from '../../constants/dates';
 
 const Separator = styled.div`
   padding: 5px 20px;
@@ -33,14 +32,16 @@ const StyledTodayIcon = styled(TodayIcon)`
   }
 `;
 
-const getTasksList = (taskObject) => {
-  return Object.keys(taskObject).map(key => ({
-    ...taskObject[key],
-    uid: key,
-  })).reverse();
+const getTasksList = taskObject => {
+  return Object.keys(taskObject)
+    .map(key => ({
+      ...taskObject[key],
+      uid: key,
+    }))
+    .reverse();
 };
 
-const groupTasksByDay = (tasksList) => {
+const groupTasksByDay = tasksList => {
   return tasksList.reduce((res, item) => {
     if (!res[item.day]) res[item.day] = [];
     res[item.day].push(item);
@@ -57,11 +58,49 @@ class HomePage extends Component {
       tasks: [],
       groupedList: {},
       edit: null,
-      open: false
+      open: false,
     };
   }
 
-  onEditTask = (task) => {
+  componentDidMount() {
+    const { firebase } = this.props;
+    const authUser = JSON.parse(localStorage.getItem('authUser'));
+
+    this.setState({ loading: true });
+
+    firebase
+      .tasks()
+      .orderByChild('userId')
+      .equalTo(authUser.uid)
+      .limitToLast(100)
+      .on('value', snapshot => {
+        // Убрать этот костыль - новый таск создается позже чем срабатывает это событие!
+        // надо просто вручную вызывать обновление списка!!!! (не обновляется после EDIT!!!!)
+        setTimeout(() => {
+          const taskObject = snapshot.val();
+          if (taskObject) {
+            const tasksList = getTasksList(taskObject);
+            const groupedList = groupTasksByDay(tasksList);
+            this.setState({
+              ...this.state,
+              groupedList,
+              tasks: tasksList,
+              loading: false,
+            });
+          } else {
+            this.setState({ tasks: null, loading: false });
+          }
+        }, 500);
+        // ====================================================
+      });
+  }
+
+  componentWillUnmount() {
+    const { firebase } = this.props;
+    firebase.tasks().off();
+  }
+
+  onEditTask = task => {
     this.setState({ ...this.state, edit: task });
   };
 
@@ -72,37 +111,6 @@ class HomePage extends Component {
   onStopEdit = () => {
     this.setState({ ...this.state, edit: null, open: false });
   };
-
-  componentDidMount() {
-    const { firebase } = this.props;
-    const authUser = JSON.parse(localStorage.getItem('authUser'));
-
-    this.setState({ loading: true });
-
-    firebase.tasks().orderByChild('userId').equalTo(authUser.uid).limitToLast(100).on('value', snapshot => {
-    // firebase.tasks().limitToLast(100).on('value', snapshot => {
-
-      // Убрать этот костыль - новый таск создается позже чем срабатывает это событие!
-      // надо просто вручную вызывать обновление списка!!!! (не обновляется после EDIT!!!!)
-      setTimeout(() => {
-        const taskObject = snapshot.val();
-        if (taskObject) {
-          const tasksList = getTasksList(taskObject);
-          const groupedList = groupTasksByDay(tasksList);
-          this.setState({ ...this.state, groupedList, tasks: tasksList, loading: false });
-        } else {
-          this.setState({ tasks: null, loading: false });
-        }
-      }, 500);
-      // ====================================================
-
-    });
-  }
-
-  componentWillUnmount() {
-    const { firebase } = this.props;
-    firebase.tasks().off();
-  }
 
   render() {
     const { tasks, loading, groupedList, edit, open } = this.state;
@@ -115,29 +123,25 @@ class HomePage extends Component {
               edit={edit}
               outerOpen={open}
               userId={authUser.uid}
-              onStopEdit={ this.onStopEdit }
+              onStopEdit={this.onStopEdit}
             />
-
-            { loading && <Spinner /> }
-
-            {
-              tasks ? (
-                Object.keys(groupedList).map((key) => (
-                  <Fragment key={key}>
-                    <Separator>
-                      <StyledTodayIcon />
-                      { moment(key, DAY_FORMAT).format(TODAY) }
-                    </Separator>
-                    <TasksList
-                      tasks={groupedList[key]}
-                      onEditTask={this.onEditTask}
-                    />
-                  </Fragment>
-                ))
-              ) : (
-                <NoTasks create={ this.createTask }/>
-              )
-            }
+            {loading && <Spinner />}
+            {tasks ? (
+              Object.keys(groupedList).map((key) => (
+                <Fragment key={key}>
+                  <Separator>
+                    <StyledTodayIcon />
+                    {moment(key, DAY_FORMAT).format(TODAY)}
+                  </Separator>
+                  <TasksList
+                    tasks={groupedList[key]}
+                    onEditTask={this.onEditTask}
+                  />
+                </Fragment>
+              ))
+            ) : (
+              <NoTasks create={this.createTask} />
+            )}
           </div>
         )}
       </AuthUserContext.Consumer>

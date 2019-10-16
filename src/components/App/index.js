@@ -4,6 +4,10 @@ import styled from 'styled-components';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 
+// custom theme
+import { MuiThemeProvider } from '@material-ui/core/styles';
+import theme from '../../theme';
+
 import Navigation from '../Navigation';
 import SignUpPage from '../SignUp';
 import SignInPage from '../SignIn';
@@ -14,10 +18,6 @@ import AdminPage from '../Admin';
 
 import * as ROUTES from '../../constants/routes';
 import { withAuthentication } from '../Session';
-
-// custom theme
-import { MuiThemeProvider } from '@material-ui/core/styles';
-import theme from '../../theme';
 
 const MainWrap = styled.div`
   padding: 10px;

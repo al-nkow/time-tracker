@@ -26,23 +26,25 @@ const Wrap = styled.div`
 
 const PasswordForgetForm = ({ firebase, openToast }) => {
   const [values, setValues] = React.useState({
-    email: ''
+    email: '',
   });
 
   const [errors, setErrors] = React.useState({
-    email: ''
+    email: '',
   });
 
-  const rules = {
-    email: checkEmail
-  };
-
-  function checkEmail (value) {
-    return validateEmail(value) || !value ? '' : 'Wrong address format';
+  function checkEmail(value) {
+    return validateEmail(value) || !value
+      ? ''
+      : 'Wrong address format';
   }
 
+  const rules = {
+    email: checkEmail,
+  };
+
   const handleChange = name => event => {
-    const value = event.target.value;
+    const { value } = event.target;
     setValues({ ...values, [name]: value });
     setErrors({ ...errors, [name]: rules[name](value) });
   };
@@ -54,14 +56,14 @@ const PasswordForgetForm = ({ firebase, openToast }) => {
       setValues({ email: '' });
       openToast({
         message: 'Check your mail',
-        type: 'success'
+        type: 'success',
       });
-    } catch(err) {
+    } catch (err) {
       console.log('RESET PASSWORD ERROR', err);
       const ERROR = err && err.message ? err.message : 'ERROR';
       openToast({
         message: ERROR,
-        type: 'error'
+        type: 'error',
       });
     }
   };
@@ -73,9 +75,9 @@ const PasswordForgetForm = ({ firebase, openToast }) => {
           <TextField
             id="email-address"
             label="Email Address *"
-            value={ values.email }
-            onChange={ handleChange('email') }
-            helperText={ errors.email }
+            value={values.email}
+            onChange={handleChange('email')}
+            helperText={errors.email}
             margin="normal"
             fullWidth
           />
@@ -84,15 +86,15 @@ const PasswordForgetForm = ({ firebase, openToast }) => {
           size="small"
           variant="contained"
           color="secondary"
-          onClick={ onSubmit }
-          disabled={ !values.email || !!errors.email }
+          onClick={onSubmit}
+          disabled={!values.email || !!errors.email}
         >
           <SendIcon fontSize="small" />
           Reset my password
         </StyledButton>
       </form>
     </Wrap>
-  )
+  );
 };
 
 export default compose(

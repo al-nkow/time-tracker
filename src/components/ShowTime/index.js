@@ -1,10 +1,9 @@
 import React from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
-import { slateblue } from '../../constants/colors';
-
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { slateblue } from '../../constants/colors';
 
 const TrackWrap = styled.div`
   float: right;
@@ -13,7 +12,9 @@ const TrackWrap = styled.div`
   border-radius: 4px;
   background: ${slateblue};
   color: #ffffff;
-  box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12);
+  box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.2),
+    0px 2px 2px 0px rgba(0, 0, 0, 0.14),
+    0px 3px 1px -2px rgba(0, 0, 0, 0.12);
 `;
 
 const StyledScheduleIcon = styled(ScheduleIcon)`
@@ -27,11 +28,11 @@ const StyledScheduleIcon = styled(ScheduleIcon)`
 `;
 
 const StyledCircularProgress = styled(CircularProgress)`
-    vertical-align: middle;
-    margin: -2px 8px 0 5px;
-    .MuiCircularProgress-svg {
-      color: #ffffff;
-    }
+  vertical-align: middle;
+  margin: -2px 8px 0 5px;
+  .MuiCircularProgress-svg {
+    color: #ffffff;
+  }
 `;
 
 const ShowTime = ({ track }) => {
@@ -40,11 +41,6 @@ const ShowTime = ({ track }) => {
     if (item.start && item.stop) res = res + item.stop - item.start;
     return res;
   }, 0);
-  const minutes = Math.round(milliseconds/60000);
-  const sum = minutes > 60 ? getHours(minutes) : minutes + 'min';
-  const lastTrack = track[track.length - 1];
-  const lastStartTime = lastTrack.start;
-  const lastStopTime = lastTrack.stop;
 
   function getHours(minutes) {
     const hours = Math.round(minutes/60);
@@ -52,16 +48,24 @@ const ShowTime = ({ track }) => {
     return `${hours}h${remainder}min`;
   }
 
+  const minutes = Math.round(milliseconds / 60000);
+  const sum = minutes > 60 ? getHours(minutes) : `${minutes} min`;
+  const lastTrack = track[track.length - 1];
+  const lastStartTime = lastTrack.start;
+  const lastStopTime = lastTrack.stop;
+
   return (
     <TrackWrap>
       <StyledScheduleIcon />
-      <b>{ sum } </b>
-      <b>{ lastStartTime && !lastStopTime ?  (
+      <b>{sum} </b>
+      <b>
+        {lastStartTime && !lastStopTime && (
           <span>
-      <StyledCircularProgress size={16} />
-            { moment(lastStartTime).format('HH:mm') }
-    </span>
-      ) : '' }</b>
+            <StyledCircularProgress size={16} />
+            {moment(lastStartTime).format('HH:mm')}
+          </span>
+        )}
+      </b>
     </TrackWrap>
   );
 };

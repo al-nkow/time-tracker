@@ -1,10 +1,10 @@
 import React from 'react';
-import { AuthUserContext, withAuthorization } from '../Session';
 import styled from 'styled-components';
 import PasswordChangeForm from '../PasswordChangeForm';
 import PasswordForgetForm from '../PasswordForgetForm';
+import { AuthUserContext, withAuthorization } from '../Session';
 import { violet, blue } from '../../constants/colors';
-import {StyledPaper, Inner} from '../Shared';
+import { StyledPaper, Inner } from '../Shared';
 
 const Title = styled.div`
   font-size: 22px;
@@ -23,9 +23,7 @@ const AccountPage = () => (
       <StyledPaper>
         <Inner>
           <Title>Account: {authUser.email}</Title>
-          {
-            authUser.username ? (<Name>{authUser.username}</Name>) : ''
-          }
+          {authUser.username ? <Name>{authUser.username}</Name> : ''}
           <PasswordForgetForm />
           <PasswordChangeForm />
         </Inner>

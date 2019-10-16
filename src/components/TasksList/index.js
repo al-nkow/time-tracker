@@ -2,7 +2,7 @@ import React from 'react';
 import TaskItem from '../TaskItem';
 
 const TasksList = ({ tasks, onEditTask }) => {
-  if (!tasks) return (<div>There are no tasks ...</div>);
+  if (!tasks) return <div>There are no tasks ...</div>;
 
   return (
     <div>

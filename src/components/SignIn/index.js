@@ -1,15 +1,15 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
+import styled from 'styled-components';
 import { compose } from 'recompose';
-import { withFirebase } from '../Firebase';
-import WithToast from '../WithToast';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import LockIcon from '@material-ui/icons/Lock';
 import EmailIcon from '@material-ui/icons/Email';
 import { StyledPaper, Inner } from '../Shared';
-import styled from 'styled-components';
+import WithToast from '../WithToast';
+import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
 import { slateblue, blue, textLight } from '../../constants/colors';
 
@@ -48,10 +48,14 @@ const SignInPage = () => (
     <Inner>
       <SignInForm />
       <LinkWrap>
-        <FootLink to={ROUTES.PASSWORD_FORGET}>Forgot Password?</FootLink>
+        <FootLink to={ROUTES.PASSWORD_FORGET}>
+          Forgot Password?
+        </FootLink>
       </LinkWrap>
       <LinkWrap>
-        <FootLink to={ROUTES.SIGN_UP}>Don't have an account? Sign Up</FootLink>
+        <FootLink to={ROUTES.SIGN_UP}>
+          Don't have an account? Sign Up
+        </FootLink>
       </LinkWrap>
     </Inner>
   </StyledPaper>
@@ -59,11 +63,12 @@ const SignInPage = () => (
 
 const SignInFormBase = ({ firebase, history, openToast }) => {
   const [values, setValues] = React.useState({
-    email: '', password: ''
+    email: '',
+    password: '',
   });
 
   const handleChange = name => event => {
-    const value = event.target.value;
+    const { value } = event.target;
     setValues({ ...values, [name]: value });
   };
 
@@ -78,7 +83,7 @@ const SignInFormBase = ({ firebase, history, openToast }) => {
       .catch(() => {
         openToast({
           message: 'Email or password is incorrect',
-          type: 'error'
+          type: 'error',
         });
       });
   };
@@ -89,14 +94,16 @@ const SignInFormBase = ({ firebase, history, openToast }) => {
         <TextField
           id="signin-email"
           label="Email Address"
-          value={ values.email }
-          onChange={ handleChange('email') }
+          value={values.email}
+          onChange={handleChange('email')}
           margin="normal"
           fullWidth
           InputProps={{
-            endAdornment: <StyledInputAdornment position="end">
-              <EmailIcon />
-            </StyledInputAdornment>,
+            endAdornment: (
+              <StyledInputAdornment position="end">
+                <EmailIcon />
+              </StyledInputAdornment>
+            ),
           }}
         />
       </Row>
@@ -105,22 +112,24 @@ const SignInFormBase = ({ firebase, history, openToast }) => {
           id="signin-password"
           label="Password"
           type="password"
-          value={ values.password }
-          onChange={ handleChange('password') }
+          value={values.password}
+          onChange={handleChange('password')}
           margin="normal"
           fullWidth
           InputProps={{
-            endAdornment: <StyledInputAdornment position="end">
-              <LockIcon />
-            </StyledInputAdornment>,
+            endAdornment: (
+              <StyledInputAdornment position="end">
+                <LockIcon />
+              </StyledInputAdornment>
+            ),
           }}
         />
         <StyledButton
           fullWidth
           variant="contained"
           color="primary"
-          onClick={ onSubmit }
-          disabled={ !values.email || !values.password }
+          onClick={onSubmit}
+          disabled={!values.email || !values.password}
         >
           Sign In
         </StyledButton>

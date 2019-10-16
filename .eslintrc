@@ -1,0 +1,64 @@
+{
+  "extends": ["airbnb", "plugin:import/errors", "plugin:prettier/recommended", "prettier/react", "prettier/standard", "plugin:react/recommended"],
+  "plugins": ["react", "import", "react-hooks", "prettier"],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"],
+        "moduleDirectory": ["node_modules", "src/"]
+      }
+    }
+  },
+  "rules": {
+    "prettier/prettier": "error",
+    "react/button-has-type": "error",
+    "react/forbid-prop-types": [2, { "forbid": ["any"] } ],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "react/forbid-component-props": "error",
+    "react/jsx-closing-tag-location": "error",
+    "react/destructuring-assignment": "error",
+    "react/jsx-boolean-value": ["error", "never"],
+    "react/jsx-closing-bracket-location": "error",
+    "react/jsx-curly-spacing": ["error", "never"],
+    "react/jsx-equals-spacing": "error",
+    "react/no-deprecated": "error",
+    "react/no-did-mount-set-state": "error",
+    "react/no-did-update-set-state": "error",
+    "react/no-string-refs": "error",
+    "react/no-unknown-property": "error",
+    "react/react-in-jsx-scope": "error",
+    "react/self-closing-comp": "error",
+    "react/sort-prop-types": "error",
+    "react/jsx-filename-extension": [
+      1,
+      {
+        "extensions": [".js", ".jsx"]
+      }
+    ],
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "react/prop-types": 1,
+    "no-console": 1,
+    "no-underscore-dangle": 1,
+    "import/imports-first": ["error", "absolute-first"],
+    "import/newline-after-import": "error",
+    "react/jsx-props-no-spreading": 1
+  },
+  "globals": {
+    "window": true,
+    "document": true,
+    "localStorage": true,
+    "FormData": true,
+    "FileReader": true,
+    "Blob": true,
+    "navigator": true,
+    "fetch": true
+  },
+  "parser": "babel-eslint"
+}

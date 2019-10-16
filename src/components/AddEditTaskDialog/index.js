@@ -7,13 +7,13 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Fab from '@material-ui/core/Fab';
-import { withFirebase } from '../Firebase';
-import WithToast from '../WithToast';
 import styled from 'styled-components';
 import AddIcon from '@material-ui/icons/Add';
 import Tooltip from '@material-ui/core/Tooltip';
-import { compose } from 'recompose';
 import moment from 'moment';
+import { compose } from 'recompose';
+import WithToast from '../WithToast';
+import { withFirebase } from '../Firebase';
 
 import { DAY_FORMAT } from '../../constants/dates';
 
@@ -24,11 +24,22 @@ const Controls = styled.div`
   width: 58px;
 `;
 
-const AddEditTaskDialog = (props) => {
-  const { edit, onStopEdit, userId, firebase, openToast, outerOpen } = props;
+const AddEditTaskDialog = props => {
+  const {
+    edit,
+    onStopEdit,
+    userId,
+    firebase,
+    openToast,
+    outerOpen,
+  } = props;
   const [open, setOpen] = React.useState(false);
   const [values, setValues] = React.useState({
-    name: '', title: '', link: '', branch: '', notes: ''
+    name: '',
+    title: '',
+    link: '',
+    branch: '',
+    notes: '',
   });
 
   const handleClickOpen = () => {
@@ -36,7 +47,13 @@ const AddEditTaskDialog = (props) => {
   };
 
   const handleClose = () => {
-    setValues({ name: '', title: '', link: '', branch: '', notes: '' });
+    setValues({
+      name: '',
+      title: '',
+      link: '',
+      branch: '',
+      notes: '',
+    });
     setOpen(false);
     onStopEdit();
   };
@@ -45,28 +62,25 @@ const AddEditTaskDialog = (props) => {
     setValues({ ...values, [name]: event.target.value });
   };
 
-  const getCursorPosition = (el) => {
-    if ('selectionStart' in el) {
-      return el.selectionStart;
-    } else if ('selection' in document) {
+  const getCursorPosition = el => {
+    if ('selectionStart' in el) return el.selectionStart;
+    if ('selection' in document) {
       el.focus();
       const Sel = document.selection.createRange();
       const SelLength = document.selection.createRange().text.length;
       Sel.moveStart('character', -el.value.length);
       return Sel.text.length - SelLength;
-    } else {
-      return 0;
     }
+    return 0;
   };
 
-  const splice = (idx, rem, substr, str) => {
-    return str.slice(0, idx) + substr + str.slice(idx + Math.abs(rem));
-  };
+  const splice = (idx, rem, substr, str) =>
+    str.slice(0, idx) + substr + str.slice(idx + Math.abs(rem));
 
-  const addTag = (tag) => {
+  const addTag = tag => {
     const el = document.getElementById('task-notes');
     const pos = getCursorPosition(el);
-    const notes = values.notes;
+    const { notes } = values;
 
     setValues({ ...values, notes: splice(pos, 0, tag, notes) });
     el.focus();
@@ -84,12 +98,12 @@ const AddEditTaskDialog = (props) => {
       await firebase.tasks().push(data);
       openToast({
         message: 'Task created',
-        type: 'success'
+        type: 'success',
       });
-    } catch(err) {
+    } catch (err) {
       openToast({
         message: 'ERROR',
-        type: 'error'
+        type: 'error',
       });
       console.log('CREATE TASK ERROR: ', err);
     }
@@ -101,18 +115,22 @@ const AddEditTaskDialog = (props) => {
       track: edit.track || [],
       userId: edit.userId,
       day: edit.day,
-      status: edit.status || 'to_do'
+      status: edit.status || 'to_do',
     };
 
     try {
       firebase.task(edit.uid).set(data);
-    } catch(err) {
+    } catch (err) {
       console.log('EDIT TASK ERROR: ', err);
     }
   };
 
   const saveForm = () => {
-    edit ? updateTask() : createNewTask();
+    if (edit) {
+      updateTask();
+    } else {
+      createNewTask();
+    }
     handleClose();
   };
 
@@ -137,18 +155,24 @@ const AddEditTaskDialog = (props) => {
     <div>
       <Controls>
         <Tooltip title="Add task" placement="left" enterDelay={500}>
-          <Fab color="primary" aria-label="add task" onClick={handleClickOpen}>
+          <Fab
+            color="primary"
+            aria-label="add task"
+            onClick={handleClickOpen}
+          >
             <AddIcon />
           </Fab>
         </Tooltip>
       </Controls>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">
-          { edit ? 'Update task' : 'Create task' }
+          {edit ? 'Update task' : 'Create task'}
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            To save the task, specify at least a name and description. You can edit this later.<br />
+            To save the task, specify at least a name and description.
+            You can edit this later.
+            <br />
             You can write html code in notes area.
           </DialogContentText>
           <form noValidate autoComplete="off">
@@ -156,8 +180,8 @@ const AddEditTaskDialog = (props) => {
               <TextField
                 id="task-name"
                 label="Name *"
-                value={ values.name }
-                onChange={ handleChange('name') }
+                value={values.name}
+                onChange={handleChange('name')}
                 margin="normal"
                 fullWidth
               />
@@ -166,8 +190,8 @@ const AddEditTaskDialog = (props) => {
               <TextField
                 id="task-title"
                 label="Title *"
-                value={ values.title }
-                onChange={ handleChange('title') }
+                value={values.title}
+                onChange={handleChange('title')}
                 margin="normal"
                 fullWidth
               />
@@ -176,8 +200,8 @@ const AddEditTaskDialog = (props) => {
               <TextField
                 id="task-link"
                 label="Link"
-                value={ values.link }
-                onChange={ handleChange('link') }
+                value={values.link}
+                onChange={handleChange('link')}
                 margin="normal"
                 fullWidth
               />
@@ -186,8 +210,8 @@ const AddEditTaskDialog = (props) => {
               <TextField
                 id="task-branch"
                 label="Branch"
-                value={ values.branch }
-                onChange={ handleChange('branch') }
+                value={values.branch}
+                onChange={handleChange('branch')}
                 margin="normal"
                 fullWidth
               />
@@ -198,14 +222,14 @@ const AddEditTaskDialog = (props) => {
                 label="Notes"
                 multiline
                 rows="4"
-                value={ values.notes }
-                onChange={ handleChange('notes') }
+                value={values.notes}
+                onChange={handleChange('notes')}
                 margin="normal"
                 fullWidth
               />
-              <Button size="small" onClick={addTag.bind(null, '<br/>')}>{'<br>'}</Button>
-              <Button size="small" onClick={addTag.bind(null, '<div></div>')}>{'<div>'}</Button>
-              <Button size="small" onClick={addTag.bind(null, '<b></b>')}>{'<b>'}</Button>
+              <Button size="small" onClick={() => addTag('<br/>')}>{'<br>'}</Button>
+              <Button size="small" onClick={() => addTag('<div></div>')}>{'<div>'}</Button>
+              <Button size="small" onClick={() => addTag('<b></b>')}>{'<b>'}</Button>
             </div>
           </form>
         </DialogContent>
@@ -213,7 +237,7 @@ const AddEditTaskDialog = (props) => {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={ saveForm } color="primary">
+          <Button onClick={saveForm} color="primary">
             Save
           </Button>
         </DialogActions>
@@ -224,5 +248,5 @@ const AddEditTaskDialog = (props) => {
 
 export default compose(
   withFirebase,
-  WithToast
+  WithToast,
 )(AddEditTaskDialog);

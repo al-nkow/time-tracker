@@ -14,10 +14,12 @@ const Wrap = styled.div`
   }
 `;
 
-export default () => {
+const Spinner = () => {
   return (
     <Wrap>
       <CircularProgress color="secondary" size={60} />
     </Wrap>
-  )
-}
+  );
+};
+
+export default Spinner;

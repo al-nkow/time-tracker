@@ -1,11 +1,11 @@
 import React from 'react';
-import { withFirebase } from '../Firebase';
 import styled from 'styled-components';
+import { compose } from 'recompose';
 import Button from '@material-ui/core/Button';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import TextField from '@material-ui/core/TextField';
-import { compose } from 'recompose';
 import WithToast from '../WithToast';
+import { withFirebase } from '../Firebase';
 
 const StyledButton = styled(Button)`
   .MuiSvgIcon-root {
@@ -27,11 +27,11 @@ const PasswordChangeForm = ({ firebase, openToast }) => {
   const ERROR_TEXT = 'Passwords do not match';
   const [values, setValues] = React.useState({
     passwordOne: '',
-    passwordTwo: ''
+    passwordTwo: '',
   });
 
   const handleChange = name => event => {
-    const value = event.target.value;
+    const { value } = event.target;
     setValues({ ...values, [name]: value });
   };
 
@@ -42,20 +42,24 @@ const PasswordChangeForm = ({ firebase, openToast }) => {
       setValues({ passwordOne: '', passwordTwo: '' });
       openToast({
         message: 'Password updated',
-        type: 'success'
+        type: 'success',
       });
-    } catch(err) {
+    } catch (err) {
       console.log('UPDATE PASSWORD ERROR', err);
       const ERROR = err && err.message ? err.message : 'ERROR';
       openToast({
         message: ERROR,
-        type: 'error'
+        type: 'error',
       });
     }
   };
 
-  const disabled = !values.passwordOne || !values.passwordTwo || values.passwordOne !== values.passwordTwo;
-  const helper = values.passwordOne !== values.passwordTwo ? ERROR_TEXT : '';
+  const disabled =
+    !values.passwordOne ||
+    !values.passwordTwo ||
+    values.passwordOne !== values.passwordTwo;
+  const helper =
+    values.passwordOne !== values.passwordTwo ? ERROR_TEXT : '';
 
   return (
     <Wrap>
@@ -63,9 +67,9 @@ const PasswordChangeForm = ({ firebase, openToast }) => {
         <TextField
           id="email-address"
           label="New password *"
-          value={ values.passwordOne }
-          onChange={ handleChange('passwordOne') }
-          helperText={ helper }
+          value={values.passwordOne}
+          onChange={handleChange('passwordOne')}
+          helperText={helper}
           margin="normal"
           fullWidth
         />
@@ -73,9 +77,9 @@ const PasswordChangeForm = ({ firebase, openToast }) => {
           <TextField
             id="email-address"
             label="Repeat new password *"
-            value={ values.passwordTwo }
-            onChange={ handleChange('passwordTwo') }
-            helperText={ helper }
+            value={values.passwordTwo}
+            onChange={handleChange('passwordTwo')}
+            helperText={helper}
             margin="normal"
             fullWidth
           />
@@ -84,15 +88,15 @@ const PasswordChangeForm = ({ firebase, openToast }) => {
           size="small"
           variant="contained"
           color="secondary"
-          onClick={ onSubmit }
-          disabled={ disabled }
+          onClick={onSubmit}
+          disabled={disabled}
         >
           <RotateLeftIcon fontSize="small" />
           Reset my password
         </StyledButton>
       </form>
     </Wrap>
-  )
+  );
 };
 
 export default compose(

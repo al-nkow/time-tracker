@@ -1,7 +1,6 @@
 import React from 'react';
+import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { withFirebase } from '../Firebase';
-import { AuthUserContext } from '../Session';
 import Fab from '@material-ui/core/Fab';
 import Tooltip from '@material-ui/core/Tooltip';
 import HomeIcon from '@material-ui/icons/Home';
@@ -9,9 +8,10 @@ import PersonIcon from '@material-ui/icons/Person';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import SettingsIcon from '@material-ui/icons/Settings';
+import { AuthUserContext } from '../Session';
+import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
 import * as ROLES from '../../constants/roles';
-import styled from 'styled-components';
 
 const Wrap = styled.div`
   position: fixed;
@@ -25,13 +25,13 @@ const MenuItem = styled(Link)`
   display: inline-block;
 `;
 
-const Navigation = ({firebase}) => (
+const Navigation = ({ firebase }) => (
   <AuthUserContext.Consumer>
     {authUser =>
       authUser ? (
-        <NavigationAuth authUser={ authUser } firebase={ firebase }/>
+        <NavigationAuth authUser={authUser} firebase={firebase} />
       ) : (
-        <NavigationNonAuth/>
+        <NavigationNonAuth />
       )
     }
   </AuthUserContext.Consumer>
@@ -40,32 +40,34 @@ const Navigation = ({firebase}) => (
 const NavigationAuth = ({ authUser, firebase }) => (
   <Wrap>
     <Tooltip title="Home" placement="right" enterDelay={500}>
-      <MenuItem to={ ROUTES.HOME }>
+      <MenuItem to={ROUTES.HOME}>
         <Fab color="primary" aria-label="edit">
           <HomeIcon />
         </Fab>
       </MenuItem>
     </Tooltip>
     <Tooltip title="Account" placement="right" enterDelay={500}>
-      <MenuItem to={ ROUTES.ACCOUNT }>
+      <MenuItem to={ROUTES.ACCOUNT}>
         <Fab color="primary" aria-label="edit">
           <PersonIcon />
         </Fab>
       </MenuItem>
     </Tooltip>
-    {
-      !!authUser.roles[ROLES.ADMIN] && (
-        <Tooltip title="Admin" placement="right" enterDelay={500}>
-          <MenuItem to={ ROUTES.ADMIN }>
-            <Fab color="primary" aria-label="edit">
-              <SettingsIcon />
-            </Fab>
-          </MenuItem>
-        </Tooltip>
-      )
-    }
+    {!!authUser.roles[ROLES.ADMIN] && (
+      <Tooltip title="Admin" placement="right" enterDelay={500}>
+        <MenuItem to={ROUTES.ADMIN}>
+          <Fab color="primary" aria-label="edit">
+            <SettingsIcon />
+          </Fab>
+        </MenuItem>
+      </Tooltip>
+    )}
     <Tooltip title="Exit" placement="right" enterDelay={500}>
-      <Fab color="primary" aria-label="edit" onClick={() => firebase.doSignOut() }>
+      <Fab
+        color="primary"
+        aria-label="edit"
+        onClick={() => firebase.doSignOut()}
+      >
         <ExitToAppIcon />
       </Fab>
     </Tooltip>
@@ -75,7 +77,7 @@ const NavigationAuth = ({ authUser, firebase }) => (
 const NavigationNonAuth = () => (
   <Wrap>
     <Tooltip title="Sign in" placement="right" enterDelay={500}>
-      <MenuItem to={ ROUTES.SIGN_IN }>
+      <MenuItem to={ROUTES.SIGN_IN}>
         <Fab color="primary" aria-label="edit">
           <MeetingRoomIcon />
         </Fab>

@@ -10,29 +10,29 @@ const defer = () => {
   const deferred = {};
   deferred.promise = new Promise((resolve, reject) => {
     deferred.resolve = resolve;
-    deferred.reject  = reject;
+    deferred.reject = reject;
   });
   return deferred;
 };
 
 const WithConfirmAction = Component => {
-  class WithConfirmAction extends React.Component {
+  class WithConfirmActionBase extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
         title: 'Confirm action',
         message: 'Your message here',
         open: false,
-        defer: null
+        defer: null,
       };
     }
 
-    confirm = async (options) => {
+    confirm = async options => {
       await this.setState({
         ...this.state,
         ...options,
         open: true,
-        defer: defer()
+        defer: defer(),
       });
       return this.state.defer.promise;
     };
@@ -41,7 +41,7 @@ const WithConfirmAction = Component => {
       this.setState({
         ...this.state,
         open: false,
-        defer: null
+        defer: null,
       });
     };
 
@@ -60,14 +60,16 @@ const WithConfirmAction = Component => {
       return (
         <React.Fragment>
           <div>
-            <Dialog open={open} onClose={this.handleClose} aria-labelledby="form-dialog-title">
+            <Dialog
+              open={open}
+              onClose={this.handleClose}
+              aria-labelledby="form-dialog-title"
+            >
               <DialogTitle id="form-dialog-title">
-                { title }
+                {title}
               </DialogTitle>
               <DialogContent>
-                <DialogContentText>
-                  { message }
-                </DialogContentText>
+                <DialogContentText>{message}</DialogContentText>
               </DialogContent>
               <DialogActions>
                 <Button onClick={this.cancel} color="primary">
@@ -79,13 +81,13 @@ const WithConfirmAction = Component => {
               </DialogActions>
             </Dialog>
           </div>
-          <Component {...this.props} confirm={this.confirm}/>
+          <Component {...this.props} confirm={this.confirm} />
         </React.Fragment>
       );
     }
   }
 
-  return WithConfirmAction;
+  return WithConfirmActionBase;
 };
 
 export default WithConfirmAction;

@@ -27,9 +27,12 @@ const Wrap = styled.div`
 
 const NoTasks = ({ create }) => {
   return (
-    <Wrap onClick={ create }>
+    <Wrap onClick={create}>
       <div className="title">The task list is currently empty</div>
-      <div className="desc">Click this area or the button on the right to create the first task</div>
+      <div className="desc">
+        Click this area or the button on the right to create the first
+        task
+      </div>
     </Wrap>
   );
 };

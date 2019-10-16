@@ -37,7 +37,6 @@ class Firebase {
   doPasswordUpdate = password =>
     this.auth.currentUser.updatePassword(password);
 
-
   // *** Merge Auth and DB User API *** //
   // add roles etc
   // we use roles from our database!
@@ -65,11 +64,9 @@ class Firebase {
       }
     });
 
-
-
-
-
-
+  // Create a user in your Firebase realtime database
+  // (1) It creates a user in Firebase's internal authentication database that is only limited accessible.
+  // (2) If (1) was successful, it creates a user in Firebase's realtime database that is accessible.
 
   // *** User API ***
   user = uid => this.db.ref(`users/${uid}`);
@@ -78,30 +75,8 @@ class Firebase {
 
   // *** Task API ***
   task = uid => this.db.ref(`tasks/${uid}`); // create, edit, remove
+
   tasks = () => this.db.ref('tasks'); // get list
-
-
 }
+
 export default Firebase;
-
-
-
-
-// const prodConfig = {
-//   apiKey: process.env.REACT_APP_PROD_API_KEY,
-//   authDomain: process.env.REACT_APP_PROD_AUTH_DOMAIN,
-//   databaseURL: process.env.REACT_APP_PROD_DATABASE_URL,
-//   projectId: process.env.REACT_APP_PROD_PROJECT_ID,
-//   storageBucket: process.env.REACT_APP_PROD_STORAGE_BUCKET,
-//   messagingSenderId: process.env.REACT_APP_PROD_MESSAGING_SENDER_ID,
-// };
-// const devConfig = {
-//   apiKey: process.env.REACT_APP_DEV_API_KEY,
-//   authDomain: process.env.REACT_APP_DEV_AUTH_DOMAIN,
-//   databaseURL: process.env.REACT_APP_DEV_DATABASE_URL,
-//   projectId: process.env.REACT_APP_DEV_PROJECT_ID,
-//   storageBucket: process.env.REACT_APP_DEV_STORAGE_BUCKET,
-//   messagingSenderId: process.env.REACT_APP_DEV_MESSAGING_SENDER_ID,
-// };
-// const config =
-//   process.env.NODE_ENV === 'production' ? prodConfig : devConfig;

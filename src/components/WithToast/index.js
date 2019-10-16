@@ -18,22 +18,21 @@ const StyledSnackbar = styled(Snackbar)`
 `;
 
 const WithToast = Component => {
-
-  class WithToast extends React.Component {
+  class WithToastBase extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
         open: false,
-        message: ''
+        message: '',
       };
     }
 
-    openToast = (options) => {
+    openToast = options => {
       this.setState({
         open: true,
         message: options.message,
         type: options.type,
-        duration: options.duration || 1000
+        duration: options.duration || 1000,
       });
     };
 
@@ -42,45 +41,46 @@ const WithToast = Component => {
         open: false,
         message: '',
         type: '',
-        duration: 1000
+        duration: 1000,
       });
     };
 
     render() {
+      const { type, open, duration, message } = this.state;
 
       return (
         <React.Fragment>
-        <StyledSnackbar
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-          }}
-          className={this.state.type}
-          open={this.state.open}
-          autoHideDuration={this.state.duration}
-          onClose={this.handleClose}
-          ContentProps={{
-            'aria-describedby': 'message-id',
-          }}
-          message={<span id="message-id">{this.state.message}</span>}
-          action={[
-            <IconButton
-              key="close"
-              aria-label="close"
-              color="inherit"
-              onClick={this.handleClose}
-            >
-              <CloseIcon />
-            </IconButton>,
-          ]}
-        />
-        <Component {...this.props} openToast={this.openToast}/>
+          <StyledSnackbar
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            className={type}
+            open={open}
+            autoHideDuration={duration}
+            onClose={this.handleClose}
+            ContentProps={{
+              'aria-describedby': 'message-id',
+            }}
+            message={<span id="message-id">{message}</span>}
+            action={[
+              <IconButton
+                key="close"
+                aria-label="close"
+                color="inherit"
+                onClick={this.handleClose}
+              >
+                <CloseIcon />
+              </IconButton>,
+            ]}
+          />
+          <Component {...this.props} openToast={this.openToast} />
         </React.Fragment>
       );
     }
   }
 
-  return WithToast;
-
+  return WithToastBase;
 };
+
 export default WithToast;
