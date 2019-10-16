@@ -16,7 +16,7 @@ const StyledFormControlLabel = styled(FormControlLabel)`
   margin-top: 10px;
 `;
 
-const SignUpForm = ({ onSubmit }) => {
+const SignUpForm = ({ onSubmit, admin }) => {
   const [values, setValues] = React.useState({
     username: '', email: '', passwordOne: '', passwordTwo: '', admin: false
   });
@@ -78,17 +78,21 @@ const SignUpForm = ({ onSubmit }) => {
           fullWidth
         />
       </div>
-      <StyledFormControlLabel
-        control={
-          <Checkbox
-            checked={ values.admin }
-            onChange={ handleChangeCheckbox }
-            value="admin"
-            color="primary"
+      {
+        admin ? (
+          <StyledFormControlLabel
+            control={
+              <Checkbox
+                checked={ values.admin }
+                onChange={ handleChangeCheckbox }
+                value="admin"
+                color="primary"
+              />
+            }
+            label="Administrator"
           />
-        }
-        label="Administrator"
-      />
+        ) : ''
+      }
       <StyledButton
         fullWidth
         variant="contained"

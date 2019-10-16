@@ -6,6 +6,7 @@ import * as ROLES from '../../constants/roles';
 import { StyledPaper, Inner, Block } from '../Shared';
 import Spinner from '../Spinner';
 import { blue } from '../../constants/colors';
+import AddUserDialog from '../AddUserDialog';
 
 const AdminPage = ({ firebase }) => {
   const [loading, setLoading] = React.useState(false);
@@ -36,6 +37,7 @@ const AdminPage = ({ firebase }) => {
 
   return (
     <Fragment>
+      <AddUserDialog />
       { loading ? <Spinner /> : (
         <StyledPaper>
           <Inner>

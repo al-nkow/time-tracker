@@ -6,7 +6,7 @@ import WithToast from '../WithToast';
 import * as ROLES from '../../constants/roles';
 import * as ROUTES from '../../constants/routes';
 import { StyledPaper, Inner, CardTitle } from '../Shared';
-import SignUpFormNew from '../SignUpForm';
+import SignUpForm from '../SignUpForm';
 
 const SignUpPage = ({ firebase, openToast, history }) => {
   const errorHandler = (consoleText, err) => {
@@ -40,7 +40,7 @@ const SignUpPage = ({ firebase, openToast, history }) => {
     <StyledPaper>
       <Inner>
         <CardTitle>Sign Up</CardTitle>
-        <SignUpFormNew onSubmit={ onSubmit }/>
+        <SignUpForm onSubmit={ onSubmit }/>
       </Inner>
     </StyledPaper>
   );
