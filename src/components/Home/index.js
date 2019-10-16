@@ -75,9 +75,12 @@ class HomePage extends Component {
 
   componentDidMount() {
     const { firebase } = this.props;
+    const authUser = JSON.parse(localStorage.getItem('authUser'));
+
     this.setState({ loading: true });
 
-    firebase.tasks().on('value', snapshot => {
+    firebase.tasks().orderByChild('userId').equalTo(authUser.uid).limitToLast(100).on('value', snapshot => {
+    // firebase.tasks().limitToLast(100).on('value', snapshot => {
 
       // Убрать этот костыль - новый таск создается позже чем срабатывает это событие!
       // надо просто вручную вызывать обновление списка!!!! (не обновляется после EDIT!!!!)
