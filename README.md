@@ -1,4 +1,4 @@
-#Task list
+# Task list
 Simple time tracker with React and Firebase's Realtime Database
 
 ### To run project
